@@ -1,3 +1,3 @@
-Root Directory: workers/parecer
+Root Directory: workers/openai-sst
 Build Command: npm install
-Start Command: node parecer-worker.js
+Start Command: node openai-sst-worker.js

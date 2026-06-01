@@ -1,10 +1,10 @@
 {
-  "name": "sgi-renovar-parecer-ia-worker",
+  "name": "sgi-renovar-openai-sst-worker",
   "version": "0.1.0",
   "private": true,
   "type": "module",
   "scripts": {
-    "start": "node parecer-worker.js"
+    "start": "node openai-sst-worker.js"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.49.1",
