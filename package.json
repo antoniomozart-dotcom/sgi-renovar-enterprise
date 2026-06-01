@@ -1,6 +1,6 @@
 {
-  "name": "sgi-renovar-score-cognitivo-worker",
-  "version": "0.1.0",
+  "name": "sgi-renovar-score-worker",
+  "version": "1.0.0",
   "private": true,
   "type": "module",
   "scripts": {
