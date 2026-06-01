@@ -1,10 +1,10 @@
 {
-  "name": "sgi-renovar-openai-sst-worker",
+  "name": "sgi-renovar-copilot-ia-worker",
   "version": "0.1.0",
   "private": true,
   "type": "module",
   "scripts": {
-    "start": "node openai-sst-worker.js"
+    "start": "node copilot-worker.js"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.49.1",
