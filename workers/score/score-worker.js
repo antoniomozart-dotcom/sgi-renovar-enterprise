@@ -66,9 +66,9 @@ function parecer(emp,scores,indic){
   if(scores.eso<75)p.push("eSocial com pendências, fila ou rejeições.");
   if(scores.ocup<75)p.push("Dimensão ocupacional com ASO, CAT ou GHE pendente.");
   if(scores.jur<75)p.push("Risco jurídico/previdenciário aumentado.");
-  if(ind.documentos_vencidos)p.push(`Documentos vencidos: ${ind.documentos_vencidos}.`);
-  if(ind.eventos_esocial_rejeitados)p.push(`Eventos eSocial com erro/rejeição: ${ind.eventos_esocial_rejeitados}.`);
-  if(ind.inconsistencias_ocr)p.push(`Inconsistências OCR abertas: ${ind.inconsistencias_ocr}.`);
+  if(indic.documentos_vencidos)p.push(`Documentos vencidos: ${indic.documentos_vencidos}.`);
+  if(indic.eventos_esocial_rejeitados)p.push(`Eventos eSocial com erro/rejeição: ${indic.eventos_esocial_rejeitados}.`);
+  if(indic.inconsistencias_ocr)p.push(`Inconsistências OCR abertas: ${indic.inconsistencias_ocr}.`);
   return p.join(" ");
 }
 function recomendacoes(ind){
