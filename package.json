@@ -1,10 +1,10 @@
 {
-  "name": "sgi-renovar-score-worker",
-  "version": "1.0.0",
+  "name": "sgi-renovar-parecer-ia-worker",
+  "version": "0.1.0",
   "private": true,
   "type": "module",
   "scripts": {
-    "start": "node score-worker.js"
+    "start": "node parecer-worker.js"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.49.1",
