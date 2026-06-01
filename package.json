@@ -1,10 +1,10 @@
 {
-  "name": "sgi-renovar-copilot-ia-worker",
+  "name": "sgi-renovar-predictive-worker",
   "version": "0.1.0",
   "private": true,
   "type": "module",
   "scripts": {
-    "start": "node copilot-worker.js"
+    "start": "node predictive-worker.js"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.49.1",

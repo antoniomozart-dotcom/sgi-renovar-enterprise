@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SGI Renovar | Predictive Analytics</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="sgi-config.js"></script>
+
+<style>
+:root{
+  --verde:#063f3a;
+  --verde2:#0d5d51;
+  --verde3:#13a88f;
+  --bg:#f4f7f6;
+  --text:#163330;
+  --muted:#70827d;
+  --line:#dfe9e6;
+  --ok:#0c8b63;
+  --warn:#c79000;
+  --danger:#c54444;
+}
+*{margin:0;padding:0;box-sizing:border-box;font-family:Inter,Arial,sans-serif}
+body{
+  min-height:100vh;
+  background:linear-gradient(180deg,#f8fbfa,var(--bg));
+  color:var(--text);
+  padding:30px;
+}
+.header{
+  border-radius:34px;
+  padding:34px;
+  color:#fff;
+  margin-bottom:24px;
+  background:
+    linear-gradient(135deg,rgba(6,63,58,.96),rgba(13,93,81,.88)),
+    url("https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&w=1800&q=85");
+  background-size:cover;
+  background-position:center;
+}
+.badge{
+  display:inline-flex;
+  padding:10px 16px;
+  border-radius:999px;
+  background:rgba(255,255,255,.14);
+  font-size:12px;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  margin-bottom:18px;
+}
+h1{
+  font-size:clamp(34px,4.5vw,60px);
+  line-height:1.02;
+  font-weight:400;
+  letter-spacing:-.045em;
+  margin-bottom:12px;
+}
+.header p{
+  max-width:1060px;
+  line-height:1.7;
+  color:rgba(255,255,255,.84);
+}
+.filters{
+  display:flex;
+  gap:12px;
+  flex-wrap:wrap;
+  margin-bottom:22px;
+}
+select,input,button{
+  height:48px;
+  border:1px solid var(--line);
+  border-radius:16px;
+  padding:0 14px;
+  background:#fff;
+  color:var(--text);
+  outline:none;
+  font-size:14px;
+}
+button{
+  border:none;
+  cursor:pointer;
+  font-weight:500;
+}
+.btn-primary{background:linear-gradient(135deg,var(--verde),var(--verde2));color:#fff}
+.btn-secondary{background:#edf5f3;color:var(--verde2)}
+.kpis{
+  display:grid;
+  grid-template-columns:repeat(6,1fr);
+  gap:14px;
+  margin-bottom:22px;
+}
+.kpi{
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:26px;
+  padding:22px;
+  min-height:126px;
+}
+.kpi small{
+  display:block;
+  color:var(--muted);
+  font-size:12px;
+  margin-bottom:10px;
+}
+.kpi strong{
+  display:block;
+  font-size:30px;
+  font-weight:500;
+  color:var(--verde);
+}
+.kpi span{
+  display:block;
+  margin-top:8px;
+  font-size:12px;
+  color:var(--muted);
+}
+.grid{
+  display:grid;
+  grid-template-columns:1.25fr .75fr;
+  gap:22px;
+  align-items:start;
+}
+.card{
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:30px;
+  padding:26px;
+  margin-bottom:22px;
+  overflow:hidden;
+}
+.card h2{
+  font-size:26px;
+  font-weight:400;
+  color:var(--verde);
+  margin-bottom:8px;
+}
+.card p{
+  color:var(--muted);
+  line-height:1.65;
+  font-size:14px;
+  margin-bottom:18px;
+}
+.table-wrap{
+  overflow:auto;
+  border:1px solid var(--line);
+  border-radius:22px;
+  max-height:560px;
+}
+table{
+  width:100%;
+  border-collapse:collapse;
+}
+thead{
+  background:#f5f9f8;
+  position:sticky;
+  top:0;
+}
+th,td{
+  padding:13px 14px;
+  text-align:left;
+  border-bottom:1px solid #edf2f1;
+  font-size:13px;
+  white-space:nowrap;
+}
+th{color:var(--verde);font-weight:500}
+td{color:#4d605b}
+.tag{
+  display:inline-flex;
+  min-width:90px;
+  justify-content:center;
+  align-items:center;
+  padding:7px 12px;
+  border-radius:999px;
+  font-size:12px;
+}
+.baixo{background:#e8f8f1;color:var(--ok)}
+.moderado{background:#fff7df;color:var(--warn)}
+.alto,.critico{background:#ffe8e8;color:var(--danger)}
+.radar{
+  display:grid;
+  gap:14px;
+}
+.radar-item{
+  display:grid;
+  grid-template-columns:150px 1fr 56px;
+  gap:12px;
+  align-items:center;
+}
+.radar-item label{
+  font-size:13px;
+  color:var(--muted);
+}
+.bar{
+  width:100%;
+  height:12px;
+  border-radius:999px;
+  background:#edf3f1;
+  overflow:hidden;
+}
+.bar div{
+  height:100%;
+  border-radius:999px;
+  background:linear-gradient(90deg,var(--verde3),var(--verde2));
+}
+.timeline{
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+  max-height:680px;
+  overflow:auto;
+}
+.item{
+  padding:15px;
+  border:1px solid var(--line);
+  border-radius:18px;
+  background:#f8fbfa;
+}
+.item strong{
+  display:block;
+  color:var(--verde);
+  margin-bottom:6px;
+  font-size:13px;
+}
+.item span{
+  display:block;
+  color:var(--muted);
+  font-size:12px;
+  line-height:1.6;
+  white-space:pre-wrap;
+}
+.heatmap{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:10px;
+}
+.heat{
+  border-radius:18px;
+  padding:16px;
+  border:1px solid var(--line);
+  min-height:110px;
+}
+.heat small{
+  display:block;
+  color:var(--muted);
+  margin-bottom:8px;
+}
+.heat strong{
+  font-size:24px;
+  font-weight:500;
+}
+.heat.baixo{background:#e8f8f1}
+.heat.moderado{background:#fff7df}
+.heat.alto,.heat.critico{background:#ffe8e8}
+@media(max-width:1380px){
+  .kpis{grid-template-columns:repeat(3,1fr)}
+  .grid{grid-template-columns:1fr}
+}
+@media(max-width:720px){
+  body{padding:18px}
+  .kpis,.heatmap{grid-template-columns:1fr}
+  .radar-item{grid-template-columns:1fr}
+}
+</style>
+</head>
+
+<body>
+
+<header class="header">
+  <div class="badge">SGI Renovar • Predictive Intelligence</div>
+  <h1>Predictive Analytics</h1>
+  <p>
+    Motor preditivo para risco de burnout, afastamento, passivo jurídico, fiscalização,
+    turnover e risco psicossocial com base em compliance, OCR, GED, eSocial, CAT, ASO e IA.
+  </p>
+</header>
+
+<section class="filters">
+  <select id="empresaFiltro">
+    <option value="">Todas as empresas</option>
+  </select>
+
+  <select id="nivelFiltro">
+    <option value="">Todos os níveis</option>
+    <option value="baixo">Baixo</option>
+    <option value="moderado">Moderado</option>
+    <option value="alto">Alto</option>
+    <option value="critico">Crítico</option>
+  </select>
+
+  <button class="btn-secondary" onclick="carregarTudo()">Atualizar</button>
+  <button class="btn-primary" onclick="copiarResumo()">Resumo Preditivo</button>
+</section>
+
+<section class="kpis">
+  <div class="kpi">
+    <small>Risco Geral</small>
+    <strong id="kpiGeral">0%</strong>
+    <span>Média preditiva da carteira.</span>
+  </div>
+
+  <div class="kpi">
+    <small>Burnout</small>
+    <strong id="kpiBurnout">0%</strong>
+    <span>Tendência psicossocial.</span>
+  </div>
+
+  <div class="kpi">
+    <small>Afastamento</small>
+    <strong id="kpiAbsenteismo">0%</strong>
+    <span>Risco ocupacional futuro.</span>
+  </div>
+
+  <div class="kpi">
+    <small>Jurídico</small>
+    <strong id="kpiJuridico">0%</strong>
+    <span>Passivo trabalhista/previdenciário.</span>
+  </div>
+
+  <div class="kpi">
+    <small>Fiscalização</small>
+    <strong id="kpiFiscalizacao">0%</strong>
+    <span>Risco de autuação.</span>
+  </div>
+
+  <div class="kpi">
+    <small>Empresas Críticas</small>
+    <strong id="kpiCriticas">0</strong>
+    <span>Nível alto ou crítico.</span>
+  </div>
+</section>
+
+<div class="grid">
+
+  <section>
+
+    <div class="card">
+      <h2>Ranking Preditivo de Empresas</h2>
+      <p>Empresas classificadas por risco futuro e criticidade corporativa.</p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Nível</th>
+              <th>Empresa</th>
+              <th>Geral</th>
+              <th>Burnout</th>
+              <th>Afastamento</th>
+              <th>Jurídico</th>
+              <th>Fiscalização</th>
+              <th>Turnover</th>
+              <th>Psicossocial</th>
+              <th>Tendência</th>
+            </tr>
+          </thead>
+          <tbody id="rankingBody">
+            <tr><td colspan="10">Carregando...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Radar Preditivo</h2>
+      <p>Leitura agregada dos principais eixos de risco futuro.</p>
+
+      <div class="radar">
+        <div class="radar-item">
+          <label>Burnout</label>
+          <div class="bar"><div id="barBurnout" style="width:0%"></div></div>
+          <strong id="txtBurnout">0%</strong>
+        </div>
+
+        <div class="radar-item">
+          <label>Afastamento</label>
+          <div class="bar"><div id="barAbsenteismo" style="width:0%"></div></div>
+          <strong id="txtAbsenteismo">0%</strong>
+        </div>
+
+        <div class="radar-item">
+          <label>Jurídico</label>
+          <div class="bar"><div id="barJuridico" style="width:0%"></div></div>
+          <strong id="txtJuridico">0%</strong>
+        </div>
+
+        <div class="radar-item">
+          <label>Fiscalização</label>
+          <div class="bar"><div id="barFiscalizacao" style="width:0%"></div></div>
+          <strong id="txtFiscalizacao">0%</strong>
+        </div>
+
+        <div class="radar-item">
+          <label>Turnover</label>
+          <div class="bar"><div id="barTurnover" style="width:0%"></div></div>
+          <strong id="txtTurnover">0%</strong>
+        </div>
+
+        <div class="radar-item">
+          <label>Psicossocial</label>
+          <div class="bar"><div id="barPsicossocial" style="width:0%"></div></div>
+          <strong id="txtPsicossocial">0%</strong>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Heatmap Preditivo</h2>
+      <p>Distribuição da carteira por nível de risco futuro.</p>
+
+      <div class="heatmap">
+        <div class="heat baixo">
+          <small>Baixo</small>
+          <strong id="heatBaixo">0</strong>
+        </div>
+
+        <div class="heat moderado">
+          <small>Moderado</small>
+          <strong id="heatModerado">0</strong>
+        </div>
+
+        <div class="heat alto">
+          <small>Alto</small>
+          <strong id="heatAlto">0</strong>
+        </div>
+
+        <div class="heat critico">
+          <small>Crítico</small>
+          <strong id="heatCritico">0</strong>
+        </div>
+      </div>
+    </div>
+
+  </section>
+
+  <aside>
+
+    <div class="card">
+      <h2>Insights Preditivos</h2>
+      <p>Leitura automática dos sinais de risco futuro.</p>
+      <div id="insightsBox" class="timeline">
+        <div class="item"><strong>Aguardando</strong><span>Carregando insights...</span></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Fatores Dominantes</h2>
+      <p>Fatores que mais influenciam o risco preditivo.</p>
+      <div id="fatoresBox" class="timeline">
+        <div class="item"><strong>Aguardando</strong><span>Carregando fatores...</span></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Recomendações</h2>
+      <p>Ações preventivas sugeridas pelo motor preditivo.</p>
+      <div id="recomendacoesBox" class="timeline">
+        <div class="item"><strong>Aguardando</strong><span>Carregando recomendações...</span></div>
+      </div>
+    </div>
+
+  </aside>
+
+</div>
+
+<script>
+const db = window.supabaseClient;
+
+let predicoes = [];
+let empresas = [];
+
+document.getElementById("empresaFiltro").addEventListener("change", renderizar);
+document.getElementById("nivelFiltro").addEventListener("change", renderizar);
+
+async function carregarTudo(){
+  await Promise.all([
+    carregarEmpresas(),
+    carregarPredicoes()
+  ]);
+
+  renderizar();
+}
+
+async function carregarEmpresas(){
+  const {data,error} = await db.from("empresas").select("id,nome").order("nome");
+
+  if(error){
+    console.warn(error.message);
+    return;
+  }
+
+  empresas = data || [];
+
+  const sel = document.getElementById("empresaFiltro");
+  const atual = sel.value;
+
+  sel.innerHTML = `<option value="">Todas as empresas</option>`;
+
+  empresas.forEach(e=>{
+    sel.innerHTML += `<option value="${e.id}">${e.nome}</option>`;
+  });
+
+  sel.value = atual;
+}
+
+async function carregarPredicoes(){
+  const {data,error} = await db
+    .from("vw_predictions_risco_atual")
+    .select("*")
+    .order("score_risco_geral",{ascending:false});
+
+  if(error){
+    console.warn(error.message);
+    predicoes = [];
+    return;
+  }
+
+  predicoes = data || [];
+}
+
+function filtrar(){
+  const empresa = document.getElementById("empresaFiltro").value;
+  const nivel = document.getElementById("nivelFiltro").value;
+
+  let lista = [...predicoes];
+
+  if(empresa){
+    lista = lista.filter(p=>String(p.empresa_id) === String(empresa));
+  }
+
+  if(nivel){
+    lista = lista.filter(p=>String(p.nivel_risco_geral) === String(nivel));
+  }
+
+  return lista;
+}
+
+function renderizar(){
+  const lista = filtrar();
+
+  renderKPIs(lista);
+  renderRanking(lista);
+  renderRadar(lista);
+  renderHeatmap(lista);
+  renderInsights(lista);
+  renderFatores(lista);
+  renderRecomendacoes(lista);
+}
+
+function renderKPIs(lista){
+  document.getElementById("kpiGeral").innerText = n(media(lista,"score_risco_geral")) + "%";
+  document.getElementById("kpiBurnout").innerText = n(media(lista,"score_burnout")) + "%";
+  document.getElementById("kpiAbsenteismo").innerText = n(media(lista,"score_absenteismo")) + "%";
+  document.getElementById("kpiJuridico").innerText = n(media(lista,"score_juridico_preditivo")) + "%";
+  document.getElementById("kpiFiscalizacao").innerText = n(media(lista,"score_fiscalizacao")) + "%";
+  document.getElementById("kpiCriticas").innerText = lista.filter(p=>["alto","critico"].includes(p.nivel_risco_geral)).length;
+}
+
+function renderRanking(lista){
+  const body = document.getElementById("rankingBody");
+
+  if(!lista.length){
+    body.innerHTML = `<tr><td colspan="10">Nenhuma predição encontrada.</td></tr>`;
+    return;
+  }
+
+  body.innerHTML = lista.map(p=>`
+    <tr>
+      <td><span class="tag ${p.nivel_risco_geral || "baixo"}">${label(p.nivel_risco_geral)}</span></td>
+      <td>${p.empresa_nome || ""}</td>
+      <td>${n(p.score_risco_geral)}%</td>
+      <td>${n(p.score_burnout)}%</td>
+      <td>${n(p.score_absenteismo)}%</td>
+      <td>${n(p.score_juridico_preditivo)}%</td>
+      <td>${n(p.score_fiscalizacao)}%</td>
+      <td>${n(p.score_turnover)}%</td>
+      <td>${n(p.score_psicossocial)}%</td>
+      <td>${labelTendencia(p.tendencia)}</td>
+    </tr>
+  `).join("");
+}
+
+function renderRadar(lista){
+  setBar("Burnout", media(lista,"score_burnout"));
+  setBar("Absenteismo", media(lista,"score_absenteismo"));
+  setBar("Juridico", media(lista,"score_juridico_preditivo"));
+  setBar("Fiscalizacao", media(lista,"score_fiscalizacao"));
+  setBar("Turnover", media(lista,"score_turnover"));
+  setBar("Psicossocial", media(lista,"score_psicossocial"));
+}
+
+function setBar(nome, valor){
+  valor = n(valor);
+
+  document.getElementById("bar"+nome).style.width = valor + "%";
+  document.getElementById("txt"+nome).innerText = valor + "%";
+}
+
+function renderHeatmap(lista){
+  document.getElementById("heatBaixo").innerText = lista.filter(p=>p.nivel_risco_geral === "baixo").length;
+  document.getElementById("heatModerado").innerText = lista.filter(p=>p.nivel_risco_geral === "moderado").length;
+  document.getElementById("heatAlto").innerText = lista.filter(p=>p.nivel_risco_geral === "alto").length;
+  document.getElementById("heatCritico").innerText = lista.filter(p=>p.nivel_risco_geral === "critico").length;
+}
+
+function renderInsights(lista){
+  const box = document.getElementById("insightsBox");
+
+  if(!lista.length){
+    box.innerHTML = `<div class="item"><strong>Sem dados</strong><span>Aguardando ciclo preditivo.</span></div>`;
+    return;
+  }
+
+  const top = [...lista].sort((a,b)=>Number(b.score_risco_geral||0)-Number(a.score_risco_geral||0))[0];
+  const burnout = [...lista].sort((a,b)=>Number(b.score_burnout||0)-Number(a.score_burnout||0))[0];
+  const juridico = [...lista].sort((a,b)=>Number(b.score_juridico_preditivo||0)-Number(a.score_juridico_preditivo||0))[0];
+
+  const itens = [
+    {
+      titulo:"Maior risco geral",
+      texto:`${top.empresa_nome || "Empresa"} apresenta risco geral preditivo de ${n(top.score_risco_geral)}%, nível ${label(top.nivel_risco_geral)}.`
+    },
+    {
+      titulo:"Maior tendência de burnout",
+      texto:`${burnout.empresa_nome || "Empresa"} apresenta score burnout de ${n(burnout.score_burnout)}%.`
+    },
+    {
+      titulo:"Maior passivo jurídico futuro",
+      texto:`${juridico.empresa_nome || "Empresa"} apresenta score jurídico preditivo de ${n(juridico.score_juridico_preditivo)}%.`
+    }
+  ];
+
+  box.innerHTML = itens.map(i=>`
+    <div class="item">
+      <strong>${i.titulo}</strong>
+      <span>${i.texto}</span>
+    </div>
+  `).join("");
+}
+
+function renderFatores(lista){
+  const box = document.getElementById("fatoresBox");
+
+  let fatores = [];
+
+  lista.forEach(p=>{
+    const arr = Array.isArray(p.principais_fatores) ? p.principais_fatores : [];
+    arr.forEach(f=>{
+      fatores.push({
+        empresa:p.empresa_nome,
+        ...f
+      });
+    });
+  });
+
+  if(!fatores.length){
+    box.innerHTML = `<div class="item"><strong>Sem fatores</strong><span>Nenhum fator dominante identificado.</span></div>`;
+    return;
+  }
+
+  box.innerHTML = fatores.slice(0,10).map(f=>`
+    <div class="item">
+      <strong>${f.tipo || "Fator"} • ${f.empresa || ""}</strong>
+      <span>${f.descricao || ""}</span>
+    </div>
+  `).join("");
+}
+
+function renderRecomendacoes(lista){
+  const box = document.getElementById("recomendacoesBox");
+
+  let recs = [];
+
+  lista.forEach(p=>{
+    const arr = Array.isArray(p.recomendacoes) ? p.recomendacoes : [];
+    arr.forEach(r=>{
+      recs.push({
+        empresa:p.empresa_nome,
+        ...r
+      });
+    });
+  });
+
+  if(!recs.length){
+    box.innerHTML = `<div class="item"><strong>Sem recomendações</strong><span>Nenhuma recomendação preditiva encontrada.</span></div>`;
+    return;
+  }
+
+  box.innerHTML = recs.slice(0,10).map(r=>`
+    <div class="item">
+      <strong>${r.modulo || "Ação"} • ${r.prioridade || ""}</strong>
+      <span>${r.empresa || ""}\n${r.acao || ""}</span>
+    </div>
+  `).join("");
+}
+
+function copiarResumo(){
+  const lista = filtrar();
+
+  const texto = [
+    "SGI Renovar | Resumo Preditivo",
+    "",
+    "Risco geral médio: " + n(media(lista,"score_risco_geral")) + "%",
+    "Burnout médio: " + n(media(lista,"score_burnout")) + "%",
+    "Afastamento médio: " + n(media(lista,"score_absenteismo")) + "%",
+    "Risco jurídico médio: " + n(media(lista,"score_juridico_preditivo")) + "%",
+    "Risco fiscalização médio: " + n(media(lista,"score_fiscalizacao")) + "%",
+    "Empresas críticas: " + lista.filter(p=>["alto","critico"].includes(p.nivel_risco_geral)).length,
+    "",
+    "Resumo gerado automaticamente pelo Predictive Analytics do SGI Renovar."
+  ].join("\\n");
+
+  navigator.clipboard.writeText(texto);
+  alert("Resumo preditivo copiado.");
+}
+
+function media(lista,campo){
+  if(!lista.length) return 0;
+  return lista.reduce((s,i)=>s+Number(i[campo] || 0),0) / lista.length;
+}
+
+function n(v){
+  return Math.round(Number(v || 0));
+}
+
+function label(v){
+  return {
+    baixo:"Baixo",
+    moderado:"Moderado",
+    alto:"Alto",
+    critico:"Crítico"
+  }[v] || v || "Baixo";
+}
+
+function labelTendencia(v){
+  return {
+    estavel:"Estável",
+    atencao:"Atenção",
+    crescente:"Crescente",
+    crescente_critica:"Crescente crítica"
+  }[v] || v || "Estável";
+}
+
+carregarTudo();
+setInterval(carregarTudo,120000);
+</script>
+
+</body>
+</html>
